@@ -1,122 +1,228 @@
 
 section
   h1 Writing Jobs 
-  h2 Anatomy of a Job
+  h3 Anatomy of a Job
 
 section
-  pre
-    code.hljs.ruby.tall data-line-numbers="|1|3|4|5|7-13|9|11|15-28|11,15|15-28|16-19|18|21|23-27|15-28"
-      = render 'samples/good_job.rb'
+  == code(tall: true, lines: "|1|3|4|5|7-13|9|11|15-28|11,15|15-28|16-19|18|21|23-27|15-28") do
+    = render 'samples/good_job.rb'
 
 section
-  h2 What Could Go Wrong?
+  h3 What Could Go Wrong?
 
   ul
     li.fragment
       | Lots
       ul
         li.fragment 3rd party outages, Rate-limiting
-        li.fragment Network Failures
-        li.fragment Software/hardware failure
-        li.fragment Bugs in our own Jobs
-    li.fragment Sidekiq will retry these, but...
+        li.fragment Hardware/network failure
+        li.fragment
+          | Software failure
+          ul
+            li.fragment OOM, Ruby process crash
+        li.fragment
+          | Bugs in our own Jobs
+          ul
+            li.fragment
+              code NoMethodError
+
+
+    li.fragment Sidekiq (and Resque) will retry these, but...
 
 section
-  h2 Retries introduce<br><em>entirely new errors</em>
+  h3 Jobs introduce<br><em>entirely new errors</em>
   ul
-    li.fragment Jobs may run twice
+    li.fragment Jobs may run two (or more) times
     li.fragment Jobs may run 1.5 times
-    li.fragment Job may be delayed much longer than expected
-  ul
-    li.fragment Idempotency
-    li.fragment Reentrancy
-    li.fragment Transactionality
+    li.fragment
+      | Jobs may be delayed much longer than expected
+      ul
+        li.fragment Job may no longer be necessary
+    li.fragment
+      | Jobs are usually full of side-effects
+      ul
+        li.fragment API requests, emails, Stripe charges
 
 section
-  h2 Idempotency
+  h3 Patterns for Success
+  ul
+    li.fragment Idempotency + Transactionality
+    li.fragment Reentrancy
+
+  p.fragment Make your jobs safe to retry
+
+section
+  h2
+    | (Aside)
+  h3 These are not new problems
+
+section
+  h3 Idempotency
+  blockquote
+    | "Just remember that Sidekiq will execute your job at least once, not exactly once. Even a job which has completed can be re-run. [...] Sidekiq makes no exactly-once guarantee at all."
+
+section
+  h3 Idempotency
 
   ul
     li.fragment
       | Your job is <em>idempotent</em> if...
       ul 
-        li.fragment It can run once, twice, thrice...
+        li.fragment It can run two (or more) times...
         li.fragment And arrive at the same end state
-    li.fragment Sidekiq guarantees <u>at least once</u> delivery
+        li.fragment Side-effects (sending an email) are not repeated
+        li.fragment ... even if your job repeats
 
 section data-auto-animate="data-auto-animate"
-  h2 Your job is <em>Idempotent</em> if...
+  h3 Your job is <em>Idempotent</em> if...
 
-  pre
-    code data-lang="ruby" class="hljs ruby" data-id="code"
-      | 
-        # def perform(...)
-          post.publish!
+  == code(id: "code") do
+    | # def perform(...)
+        post.publish!
 
-          user.send_notification!
-          &nbsp;
+        user.send_notification!
+        &nbsp;
 
 section data-auto-animate="data-auto-animate"
-  h2 Your job is <em>Idempotent</em> if...
+  h3 Your job is <em>Idempotent</em> if...
 
-  pre
-    code data-lang="ruby" class="hljs ruby" data-id="code"
-      | 
-        # def perform(...)
-          post.publish!
-          post.publish!
-          user.send_notification!
-          user.send_notification!
-             
+  == code(id: "code") do
+    | # def perform(...)
+        post.publish!
+        post.publish!
+        user.send_notification!
+        user.send_notification!
+
 section data-auto-animate="data-auto-animate"
-  h2 Aside:
+  h2
+    | (Aside)
   p Idempotency != Concurrency
   p.fragment <strike>MightyUniqueJob</strike> unique_for/limiters
 
+section
+  h3 Transactionality
+  p Your job is <em>Transactional</em> if...
+  ul
+    li.fragment It can be interrupted...
+    li.fragment and not be <em>partially</em> applied
+    li.fragment All side-effects (DB updates, API requests) execute...
+    li.fragment or <em>no</em> side-effects execute
+    li.fragment ...unless they're idempotent
+
 section data-auto-animate="data-auto-animate"
-  h2 Idempotency
-  pre
-    code data-lang="ruby" class="hljs ruby" data-id="code"
-      | 
-        # def perform(...)
-          post.publish!
+  h3 Transactionality
+  p Your job is <em>Transactional</em> if...
+  == code(id: "code") do
+    | # def perform(...)
 
-          user.send_notification!
+        post.publish!
+
+        user.send_notification!
+        &nbsp;
 
 section data-auto-animate="data-auto-animate"
-  h2 Idempotency
-  pre
-    code data-lang="ruby" class="hljs ruby" data-id="code"
-      | 
-        # def perform(...)
-          post.publish! unless post.published?
-
-          user.send_notification! unless user.notification_sent?
+  h3 Transactionality
+  p Your job is <em>Transactional</em> if...
+  == code(id: "code") do
+    | # def perform(...)
+        raise "newp" if rand(0..1) == 1
+        post.publish!
+        raise "newp" if rand(0..1) == 1
+        user.send_notification!
+        raise "newp" if rand(0..1) == 1
 
 section
-  h2 Idempotency: No-ops
+  h3 Idempotency + Transactionality
+
+  ul
+    li.fragment A completely transactional job is idempotent
+    li.fragment A completely idempotent job is ~transactional
+
+section data-auto-animate="data-auto-animate"
+  h3 Transactions are Hard
+  == code(id: "code2") do
+    | # def perform(...)
+        return if post.published?
+        post.publish!
+        user.send_notification!
+
+section data-auto-animate="data-auto-animate"
+  h3 Transactions are Hard
+  == code(id: "code2", lines:"|4|5|") do
+    | # def perform(...)
+        return if post.published?
+        Post.transaction do
+          post.publish!
+          user.send_notification!
+        end
+
+  p.fragment Please don't lock the <code>posts</code> table
+
+section data-auto-animate="data-auto-animate"
+  h3 Simple Idempotency
+  == code(id: "code2") do
+    | 
+      # def perform(...)
+        
+        post.publish!
+        user.send_notification!
+
+section data-auto-animate="data-auto-animate"
+  h3 Simple Idempotency
+  == code(id: "code2", lines: "|2|3|4|3,4") do
+    | 
+      # def perform(...)
+        return if post.published?
+        post.publish!
+        user.send_notification!
+
+section data-auto-animate="data-auto-animate"
+  h3 Simple Idempotency
+  == code(id: "code2", lines: "4") do
+    | 
+      # def perform(...)
+        return if purchase.published?
+        post.publish!
+        user.charge_credit_card!
+
+
+
+section
+  h3 Transactionality
+  == code(id: "code2", lines: "2,6|4,5|") do
+    | # def perform(...)
+        Post.transaction do
+          return if post.published?
+          post.publish!
+          user.charge_credit_card!
+        end
+
+
+
+section
+  h3 Idempotency: No-ops
   ul
     li.fragment Does your job still have work to do?
     li.fragment Has the world changed between enqueue/perform
 
 
 section
-  h2 Interruptibility
+  h3 Interruptibility
   ul
     li.fragment Your job may be interrupted at any point
     li.fragment 
 
 section data-auto-animate="data-auto-animate"
-  h2 Interruptibility
-  pre
-    code data-lang="ruby" class="hljs ruby" data-id="code" data-line-numbers="|2|4"
-      | 
-        # def perform(...)
-          post.publish! unless post.published?
+  h3 Interruptibility
+  == code(lines: "|2|4") do
+    | 
+      # def perform(...)
+        post.publish! unless post.published?
 
-          user.send_notification!
+        user.send_notification!
 
 section
-  h2 Interruptibility
+  h3 Interruptibility
   ul
     li.fragment Separate flakey from non-flakey components
 

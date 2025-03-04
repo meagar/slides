@@ -4,58 +4,70 @@ section
 section
   h3 Testing Jobs
   p Jobs (mostly) do two things: 
-  pre
-    code.hljs.ruby data-line-numbers="|2-6|8-10|"
-      | # class FooJob
-          class << self
-            def enqueue(user, post)
-              perform_async(user.network_id, 
-            end
+  == code(lines: "|2-6|8-10") do
+    | # class FooJob
+        class << self
+          def enqueue(user, post)
+            # perform_async(...)
           end
+        end
 
-          def perform(network_id, user_id, post_id)
-            # ...
-          end
+        def perform(network_id, user_id, post_id)
+          # ...
+        end
 
 section
   h3 Testing Jobs
-  p <code>enqueue</code> vs <code>perform</code>
-  ul
-    li.fragment
-      | <code>enqueue</code>
-      pre
-        code.hljs.ruby
-section
-  h3 Testing Jobs
-  p Testing <code>enqueue</code>:
+  p
+    code enqueue
   ul
     li.fragment Does it enqueue the right jobs...
     li.fragment With the right arguments...
     li.fragment At the right times?
-    
-section
+
+  p.fragment
+    code.fragment perform
+  ul
+    li.fragment Everything else
+
+section data-auto-animate="data-auto-animate"
   h3 Testing Jobs
-  p Testing <code>enqueue</code>:
-  pre
-    code
-      | expect do
-          FooJob.enqueue(user)
-        end.to(
-          enqueue_sidekiq_job(FooJob)
-            .with(user.id)
-            .at(1.hour.from_now)
-          )
+
+  == code(id: "code3", lines: "|5") do
+    | describe '.enqueue', run_jobs: false do
+        # ...
+      end
+      
+      describe '#perform', run_jobs: true do
+        # ...
+      end
+
+section data-auto-animate="data-auto-animate"
+  h3 Testing Jobs
+
+  == code(id: "code3", lines: true) do
+    | describe '.enqueue', run_jobs: false do
+        # ...
+      end
+      
+      describe '#perform' do
+        # ...
+      end
+
 
 section
-  h3 Testing Jobs
-  p Testing <code>.enqueue</code>:
+  h1 DEMO
+
+section
+  h3 Recap
   ul
     li.fragment
-      p Test Preconditions
-      code.fragment return unless user.foo?
-    li.fragment
-      p Test 
+      | Use helpers to test <code>enqueue</code>
+      ul
+        li.fragment
+          code have_enqueued_sidekiq_job
+        li.fragment
+          code sidekiq_perform_next
 
-section
-  h3 Testing Jobs
-  p testing <code>#perform</code>
+    li.fragment Reminder to <code>freeze_time</code>
+    li.fragment Test <code>perform</code> indirectly through <code>enqueue</code>

@@ -11,6 +11,7 @@ html lang="en"
     link rel="stylesheet" href="dist/theme/black.css"
 
     link rel="stylesheet" href="dist/atom-one-dark.css"
+
     css:
       .reveal pre code.tall {
         max-height: 500px !important;
@@ -21,6 +22,18 @@ html lang="en"
 
       .reveal .hljs.has-highlights tr:not(.highlight-line) {
         opacity: 0.2;
+      }
+
+      code:not(pre > code) {
+        font-size: smaller;
+        border: 1px solid #444;
+        background-color: #222;
+        color: #c191ff;
+        padding: 3px 10px;
+        border-radius: 10px;
+      }
+      blockquote {
+        font-size: smaller
       }
   body
     .reveal

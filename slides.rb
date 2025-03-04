@@ -1,6 +1,7 @@
 require 'tilt'
 require 'tilt/erb'
 require 'webrick'
+require 'slim'
 
 Tilt.register(Tilt::PlainTemplate, 'rb')
 
@@ -9,18 +10,25 @@ class Context
     Tilt.new("templates/#{template}").render(self)
   end
 
-  def code(lines: nil,  &block)
+  def code(lines: true, tall: false, fragment: false, id: nil, &block)
     text = yield
-    html = '<pre><code class="ruby hljs"'
+    classes = ["ruby", "hljs"]
+    classes <<= "tall" if tall
+    classes <<= "fragment" if fragment
+
+    html = "<pre><code"
+    html += " data-id=\"#{id}\"" if id
+    html += " class=\"#{classes.join(" ")}\""
     if lines == true
       html += ' data-line-numbers'
     elsif lines
       html += " data-line-numbers=\"#{lines}\""
     end
 
-    html + ">#{text}</code></pre>"
+    html + ">#{text.strip}</code></pre>"
   end
 end
+
 
 server = WEBrick::HTTPServer.new(Port: ENV.fetch('PORT', 8000), DocumentRoot: nil)
 
