@@ -1,0 +1,42 @@
+doctype html
+html lang="en"
+  head
+    meta charset="utf-8"
+    meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+
+    title Sidekiq
+
+    link rel="stylesheet" href="dist/reset.css"
+    link rel="stylesheet" href="dist/reveal.css"
+    link rel="stylesheet" href="dist/theme/black.css"
+
+    link rel="stylesheet" href="dist/atom-one-dark.css"
+    css:
+      .reveal pre code.tall {
+        max-height: 500px !important;
+        min-height: 500px !important;
+        height: 500px !important;
+        box-sizing: border-box;
+      }
+
+      .reveal .hljs.has-highlights tr:not(.highlight-line) {
+        opacity: 0.2;
+      }
+  body
+    .reveal
+      .slides
+        == render 'slides.slim'
+    script src="dist/reveal.js"
+    script src="plugin/notes/notes.js"
+    script src="plugin/markdown/markdown.js"
+    script src="plugin/highlight/highlight.js"
+    javascript:
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        hash: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+      });

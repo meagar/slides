@@ -1,0 +1,122 @@
+
+section
+  h1 Writing Jobs 
+  h2 Anatomy of a Job
+
+section
+  pre
+    code.hljs.ruby.tall data-line-numbers="|1|3|4|5|7-13|9|11|15-28|11,15|15-28|16-19|18|21|23-27|15-28"
+      = render 'samples/good_job.rb'
+
+section
+  h2 What Could Go Wrong?
+
+  ul
+    li.fragment
+      | Lots
+      ul
+        li.fragment 3rd party outages, Rate-limiting
+        li.fragment Network Failures
+        li.fragment Software/hardware failure
+        li.fragment Bugs in our own Jobs
+    li.fragment Sidekiq will retry these, but...
+
+section
+  h2 Retries introduce<br><em>entirely new errors</em>
+  ul
+    li.fragment Jobs may run twice
+    li.fragment Jobs may run 1.5 times
+    li.fragment Job may be delayed much longer than expected
+  ul
+    li.fragment Idempotency
+    li.fragment Reentrancy
+    li.fragment Transactionality
+
+section
+  h2 Idempotency
+
+  ul
+    li.fragment
+      | Your job is <em>idempotent</em> if...
+      ul 
+        li.fragment It can run once, twice, thrice...
+        li.fragment And arrive at the same end state
+    li.fragment Sidekiq guarantees <u>at least once</u> delivery
+
+section data-auto-animate="data-auto-animate"
+  h2 Your job is <em>Idempotent</em> if...
+
+  pre
+    code data-lang="ruby" class="hljs ruby" data-id="code"
+      | 
+        # def perform(...)
+          post.publish!
+
+          user.send_notification!
+          &nbsp;
+
+section data-auto-animate="data-auto-animate"
+  h2 Your job is <em>Idempotent</em> if...
+
+  pre
+    code data-lang="ruby" class="hljs ruby" data-id="code"
+      | 
+        # def perform(...)
+          post.publish!
+          post.publish!
+          user.send_notification!
+          user.send_notification!
+             
+section data-auto-animate="data-auto-animate"
+  h2 Aside:
+  p Idempotency != Concurrency
+  p.fragment <strike>MightyUniqueJob</strike> unique_for/limiters
+
+section data-auto-animate="data-auto-animate"
+  h2 Idempotency
+  pre
+    code data-lang="ruby" class="hljs ruby" data-id="code"
+      | 
+        # def perform(...)
+          post.publish!
+
+          user.send_notification!
+
+section data-auto-animate="data-auto-animate"
+  h2 Idempotency
+  pre
+    code data-lang="ruby" class="hljs ruby" data-id="code"
+      | 
+        # def perform(...)
+          post.publish! unless post.published?
+
+          user.send_notification! unless user.notification_sent?
+
+section
+  h2 Idempotency: No-ops
+  ul
+    li.fragment Does your job still have work to do?
+    li.fragment Has the world changed between enqueue/perform
+
+
+section
+  h2 Interruptibility
+  ul
+    li.fragment Your job may be interrupted at any point
+    li.fragment 
+
+section data-auto-animate="data-auto-animate"
+  h2 Interruptibility
+  pre
+    code data-lang="ruby" class="hljs ruby" data-id="code" data-line-numbers="|2|4"
+      | 
+        # def perform(...)
+          post.publish! unless post.published?
+
+          user.send_notification!
+
+section
+  h2 Interruptibility
+  ul
+    li.fragment Separate flakey from non-flakey components
+

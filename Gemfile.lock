@@ -1,0 +1,23 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    nio4r (2.7.4)
+    puma (6.6.0)
+      nio4r (~> 2.0)
+    slim (5.2.1)
+      temple (~> 0.10.0)
+      tilt (>= 2.1.0)
+    temple (0.10.3)
+    tilt (2.6.0)
+
+PLATFORMS
+  arm64-darwin-24
+  ruby
+
+DEPENDENCIES
+  puma
+  slim
+  tilt
+
+BUNDLED WITH
+   2.5.22

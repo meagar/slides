@@ -1,0 +1,63 @@
+section
+  h1 Recap: Why Jobs?
+  h2 What problem are we solving?
+
+section data-auto-animate="data-auto-animate"
+
+  h2 Why Jobs?
+  p Our Rails app answers web requests
+  ul
+    li.fragment
+      | When a request comes in...
+      ul
+        li.fragment A client is waiting for a response
+        li.fragment Long-running requests == bad UX
+  p.fragment <em>Performance</em>
+
+section data-auto-animate="data-auto-animate"
+
+  h2 Why Jobs?
+  p Our Rails app answers web requests
+  ul
+    li.fragment
+      | Not everything fits this model
+      ul
+        li.fragment Send onboarding email 1 hour after sign-up
+        li.fragment Run payouts every Monday at 12am
+
+  p.fragment <em>Scheduled Work</em>
+
+section data-auto-animate="data-auto-animate"
+
+  h2 Why Jobs?
+  p Our Rails app answers web requests
+  ul
+    li.fragment
+      | Some operations can fail, <em>temporarily</em>
+      ul
+        li.fragment Anything depending on a 3rd party API
+        li.fragment Failure can be intermittent, retry over time
+
+  p.fragment <em>Resiliency</em>
+
+section data-auto-animate="data-auto-animate"
+
+  h2 Why Jobs?
+  p Our Rails app answers web requests
+  ul
+    li.fragment
+      | Some work is <em>parallelizable</em>
+      ul
+        li.fragment Building yearly report → sliced by day
+        li.fragment Threads are finite and serve web traffic
+
+  p.fragment <em>Scalability/Throughput</em>
+
+section
+  h2 Why jobs?
+  ul.fragment
+    li Performance, Scalability, Resiliency
+    li Scheduled work vs Request/Response
+
+section
+  | (Questions?)
