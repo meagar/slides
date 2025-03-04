@@ -6,11 +6,11 @@ html lang="en"
 
     title Sidekiq
 
-    link rel="stylesheet" href="dist/reset.css"
-    link rel="stylesheet" href="dist/reveal.css"
-    link rel="stylesheet" href="dist/theme/black.css"
+    link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reset.min.css"
+    link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css"
+    link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/black.min.css"
 
-    link rel="stylesheet" href="dist/atom-one-dark.css"
+    style= File.read("reveal.js/dist/atom-one-dark.css")
 
     css:
       .reveal pre code.tall {
@@ -39,10 +39,14 @@ html lang="en"
     .reveal
       .slides
         == render 'slides.slim'
-    script src="dist/reveal.js"
-    script src="plugin/notes/notes.js"
-    script src="plugin/markdown/markdown.js"
-    script src="plugin/highlight/highlight.js"
+
+    /script src="dist/reveal.js"
+    script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.js"
+    /script src="plugin/notes/notes.js"
+    /script src="plugin/markdown/markdown.js"
+    /script src="plugin/highlight/highlight.js"
+    script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/highlight.min.js"
+
     javascript:
       // More info about initialization & config:
       // - https://revealjs.com/initialization/
@@ -51,5 +55,6 @@ html lang="en"
         hash: true,
 
         // Learn about plugins: https://revealjs.com/plugins/
-        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+        //plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+        plugins: [ RevealHighlight ]
       });
