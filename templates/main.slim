@@ -1,0 +1,24 @@
+
+section
+  h3 Slides go in <code>section</code>
+
+section
+  h3 Navigate with arrow keys
+
+section
+  p Code can be stepped through by lines
+  == code(lines: "|1,11|2,3|4,5|6,7|") do
+    | 1.upto(100).each do |n|
+        if i % 15 == 0
+          puts "FizzBuzz"
+        elsif n % 5 == 0
+          puts "Fizz"
+        elsif n % 3 == 0
+          puts "Buzz"
+        else
+          puts n
+        end
+      end
+
+section
+  == render "more_slides.slim"

@@ -1,0 +1,60 @@
+doctype html
+html lang="en"
+  head
+    meta charset="utf-8"
+    meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+
+    title Sidekiq
+
+    link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reset.min.css"
+    link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css"
+    link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/black.min.css"
+
+    style= File.read("reveal.js/dist/atom-one-dark.css")
+
+    css:
+      .reveal pre code.tall {
+        max-height: 500px !important;
+        min-height: 500px !important;
+        height: 500px !important;
+        box-sizing: border-box;
+      }
+
+      .reveal .hljs.has-highlights tr:not(.highlight-line) {
+        opacity: 0.2;
+      }
+
+      code:not(pre > code) {
+        font-size: smaller;
+        border: 1px solid #444;
+        background-color: #222;
+        color: #c191ff;
+        padding: 3px 10px;
+        border-radius: 10px;
+      }
+      blockquote {
+        font-size: smaller
+      }
+  body
+    .reveal
+      .slides
+        == render 'main.slim'
+
+    /script src="dist/reveal.js"
+    script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.js"
+    /script src="plugin/notes/notes.js"
+    /script src="plugin/markdown/markdown.js"
+    /script src="plugin/highlight/highlight.js"
+    script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/highlight.min.js"
+
+    javascript:
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        hash: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        //plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+        plugins: [ RevealHighlight ]
+      });
